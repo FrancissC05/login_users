@@ -44,12 +44,15 @@ export class UsersService {
         return new UserEntity(user); 
     }*/
 
-    async create(dto: CreateUserDto): Promise<UserEntity> {
-        const hashedPassword = await bcrypt.hash(dto.password, 10);
+    async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 
-        const existingRoles = await this.roleRepo.findManyByIds(dto.roles);
+        const { firstName, lastName, username, email, password} = createUserDto;
 
-        const notFoundRoles = dto.roles.filter(
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const existingRoles = await this.roleRepo.findManyByIds(roles);
+
+        const notFoundRoles = roles.filter(
             (id) => !existingRoles.some((role) => role.id === id),
         );
 
@@ -57,26 +60,15 @@ export class UsersService {
             throw new BadRequestException(
                 `The following role(s) do not exist: ${notFoundRoles.join(', ')}`,
             );
-        }
+        }        
 
-        const data: any = {
-            email: dto.email,
-            username: dto.username,
+        const user = await this.userRepo.create({
+            ...createUserDto,
             password: hashedPassword,
-            firstName: dto.firstName,
-            lastName: dto.lastName,
-            Role: {
-                connect: dto.roles.map((roleId) => ({ id: roleId })),
-            },
-        };
+            roles,
+        });
 
-        if (dto.isActive !== undefined) {
-            data.isActive = dto.isActive;
-        }
-
-        const user = await this.userRepo.create(data);
-
-        return new UserEntity(user);
+        return user;
     }
 
     async findByEmail(email: string) {
