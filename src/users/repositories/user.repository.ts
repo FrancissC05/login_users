@@ -26,8 +26,14 @@ export class UserRepository {
 
     async create(data: CreateUserDto) {
 
+        const { roleIds, ...userData } = data;
         return this.prisma.user.create({
-            data,
+            data: {
+                ...userData,
+                Role: {
+                    connect: roleIds.map((id) => ({ id })),
+                },
+            },
             include: {
                 Role: true,
             },

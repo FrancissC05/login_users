@@ -1,5 +1,5 @@
 export class UserEntity {
-    id: string;
+    id: number;
     firstName: string;
     lastName: string;
     username: string;
@@ -8,7 +8,7 @@ export class UserEntity {
     password: string;
     createdAt: Date;
     updatedAt: Date;
-    roles?: { id: string; name: string }[];
+    roles?: { id: number; name: string }[];
 
     constructor(partial: Partial<UserEntity>) {
         if (partial) {

@@ -15,9 +15,7 @@ export class RolesService {
     async create(dto: CreateRoleDto): Promise<RoleEntity> {
         const role = await this.roleRepo.create(dto.name);
         return {
-            ...role,
-            createdAt: new Date(),
-            updatedAt: new Date()
+            ...role
         } as RoleEntity;
     }
 

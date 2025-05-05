@@ -5,73 +5,65 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { RoleRepository } from '../roles/repositories/role.repository';
 
-
 @Injectable()
 export class UsersService {
-    constructor(
-        private readonly userRepo: UserRepository,
-        private readonly roleRepo: RoleRepository, 
-    ) {}
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly roleRepo: RoleRepository,
+  ) {}
 
-    async findAll(): Promise<UserEntity[]> {
-        const users = await this.userRepo.findAll();
-        return users.map((u) => new UserEntity(u));
+  async findAll(): Promise<UserEntity[]> {
+    const users = await this.userRepo.findAll();
+    return users.map((u) => new UserEntity(u));
+  }
+
+  async findById(id: number): Promise<UserEntity> {
+    const user = await this.userRepo.findOne(id);
+
+    if (!user) {
+      throw new BadRequestException(`User with id ${id} not found`);
     }
 
-    async findById(id: number): Promise<UserEntity> {
-        const user = await this.userRepo.findOne(id);
+    return user;
+  }
 
-        if (!user) {
-            throw new BadRequestException(`User with id ${id} not found`);
-        }
+  /*
+      async findById(id: number): Promise<UserEntity> {
+          const user = await this.userRepo.findOne({
+              where: { id },
+              include: {
+                  Role: true,
+              },
+          });
+  
+          if (!user) {
+              throw new BadRequestException(`User with id ${id} not found`);
+          }
+  
+          return new UserEntity(user); 
+      }*/
 
-        return user; 
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const { firstName, lastName, roleIds, username, email, password } =
+      createUserDto;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const roles = await this.roleRepo.findManyByIds(roleIds);
+    if (!roles || roles.length === 0) {
+      throw new BadRequestException(
+        `No roles found for the provided IDs: ${roleIds.join(', ')}`,
+      );
     }
-    
-    /*
-    async findById(id: number): Promise<UserEntity> {
-        const user = await this.userRepo.findOne({
-            where: { id },
-            include: {
-                Role: true,
-            },
-        });
+    const user = await this.userRepo.create({
+      ...createUserDto,
+      password: hashedPassword,
+      roleIds,
+    });
+    return user;
+  }
 
-        if (!user) {
-            throw new BadRequestException(`User with id ${id} not found`);
-        }
-
-        return new UserEntity(user); 
-    }*/
-
-    async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-
-        const { firstName, lastName, username, email, password} = createUserDto;
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const existingRoles = await this.roleRepo.findManyByIds(roles);
-
-        const notFoundRoles = roles.filter(
-            (id) => !existingRoles.some((role) => role.id === id),
-        );
-
-        if (notFoundRoles.length > 0) {
-            throw new BadRequestException(
-                `The following role(s) do not exist: ${notFoundRoles.join(', ')}`,
-            );
-        }        
-
-        const user = await this.userRepo.create({
-            ...createUserDto,
-            password: hashedPassword,
-            roles,
-        });
-
-        return user;
-    }
-
-    async findByEmail(email: string) {
-        return this.userRepo.findByEmail(email);
-    }
+  async findByEmail(email: string) {
+    return this.userRepo.findByEmail(email);
+  }
 }
