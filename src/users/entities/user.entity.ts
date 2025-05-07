@@ -5,16 +5,13 @@ export class UserEntity {
     username: string;
     email: string;
     isActive: boolean;
-    password: string;
+    password?: string;
     createdAt: Date;
     updatedAt: Date;
     roles?: { id: number; name: string }[];
 
     constructor(partial: Partial<UserEntity>) {
         if (partial) {
-            if ('password' in partial) {
-                delete partial[this.password];
-            }
     
             if ('Role' in partial && Array.isArray(partial['Role'])) {
                 this.roles = partial['Role'].map((role: any) => ({
