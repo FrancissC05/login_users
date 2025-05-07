@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -33,6 +34,16 @@ export class UsersController {
             roles: user.roles.map(r => r.name),
         };
     }*/
+
+    @Put(':id')
+    async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<UserEntity> {
+        return this.usersService.update(id, dto);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: number){
+        return this.usersService.delete(id);
+    }
 
     @Get(':id')
     async findById(@Param('id') id: number): Promise<UserEntity> {

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserRepository {
@@ -39,6 +41,27 @@ export class UserRepository {
             },
         });
     }
+
+    async update(id: number, data: Partial<User>) {
+        
+        return this.prisma.user.update({
+            where: { id },
+            data: data,
+            include: {
+                Role: true,
+            },
+        });
+    }
+
+    async delete(id: number) {
+        return this.prisma.user.delete({
+            where: { id },
+            include: {
+                Role: true,
+            },
+        });
+    }
+
 
     async findByEmail(email: string) {
         return this.prisma.user.findUnique({
