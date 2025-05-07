@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-
+/*
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
@@ -28,3 +28,4 @@ export class JwtAuthMiddleware implements NestMiddleware {
         }
     }
 }
+*/

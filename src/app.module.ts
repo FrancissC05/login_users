@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { RolesModule } from './roles/roles.module';
-import { JwtAuthMiddleware } from './auth/jwt-auth.middleware';
+//import { JwtAuthMiddleware } from './auth/jwt-auth.middleware';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { JwtAuthMiddleware } from './auth/jwt-auth.middleware';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+export class AppModule {//implements NestModule {
+  /*configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtAuthMiddleware) 
       .exclude(
@@ -32,5 +32,5 @@ export class AppModule implements NestModule {
         { path: 'users', method: RequestMethod.POST },
       )
       .forRoutes('users');
-  }
+  }*/
 }
