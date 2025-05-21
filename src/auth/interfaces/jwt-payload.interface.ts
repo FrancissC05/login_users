@@ -1,8 +1,3 @@
-export interface JwtPayload {  //extends UserEntity
-    sub: number;
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    roles: string[];
-}
+import { UserEntity } from "src/users/entities/user.entity";
+
+export interface JwtPayload extends Pick<UserEntity, 'id' | 'email'> {}
